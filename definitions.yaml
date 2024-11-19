@@ -1,0 +1,99 @@
+cluster:
+  none:
+    - command: "'*' '*'"
+      expected: "no"
+    - command: get namespace -A
+      expected: "no"
+    - command: list namespace -A
+      expected: "no"
+    - command: watch namespace -A
+      expected: "no"
+    - command: get clusterrole -A
+      expected: "no"
+    - command: get crds -A
+      expected: "no"
+  ro: 
+    - command: "'*' '*'"
+      expected: "no"
+    - command: get namespace -A
+      expected: "yes"
+    - command: list namespace -A
+      expected: "yes"
+    - command: watch namespace -A
+      expected: "yes"
+    - command: get clusterrole -A
+      expected: "no"
+    - command: get crds -A
+      expected: "yes"
+  rw:
+    - command: "'*' '*'"
+      expected: "yes"
+  cluster-basic:
+    - command: "'*' '*'"
+      expected: "no"
+    - command: create namespace -A
+      expected: "yes"
+    - command: get namespace -A
+      expected: "yes"
+    - command: list namespace -A
+      expected: "yes"
+    - command: watch namespace -A
+      expected: "yes"
+    - command: delete namespace -A
+      expected: "no"
+    - command: get clusterrole -A
+      expected: "no"
+    - command: get crds -A
+      expected: "yes"
+namespace:
+  none:
+    - command: get pods
+      expected: "no"
+    - command: list pods
+      expected: "no"
+    - command: watch pods
+      expected: "no"
+    - command: get pods/log
+      expected: "no"
+    - command: create pods/exec
+      expected: "no"
+    - command: create pods
+      expected: "no"
+    - command: update pods
+      expected: "no"
+    - command: delete pods
+      expected: "no"
+  ro:
+    - command: get pods
+      expected: "yes"
+    - command: list pods
+      expected: "yes"
+    - command: watch pods
+      expected: "yes"
+    - command: get pods/log
+      expected: "yes"
+    - command: create pods/exec
+      expected: "no"
+    - command: create pods
+      expected: "no"
+    - command: update pods
+      expected: "no"
+    - command: delete pods
+      expected: "no"
+  rw:
+    - command: get pods
+      expected: "yes"
+    - command: list pods
+      expected: "yes"
+    - command: watch pods
+      expected: "yes"
+    - command: get pods/log
+      expected: "yes"
+    - command: create pods/exec
+      expected: "yes"
+    - command: create pods
+      expected: "yes"
+    - command: update pods
+      expected: "yes"
+    - command: delete pods
+      expected: "yes"

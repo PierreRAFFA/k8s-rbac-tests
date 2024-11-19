@@ -1,0 +1,23 @@
+config:
+  kind:
+    serviceaccount:
+      system:serviceaccount:kyverno:kyverno: 
+        cluster: rw
+    group:
+      valstro:developers:
+        cluster: cluster-basic
+        namespace:
+          runtime: ro
+          apps: ro
+      valstro:managers:
+        cluster: cluster-basic
+        namespace:
+          runtime: ro
+          apps: rw
+      valstro:powerusers:
+        cluster: rw
+        namespace:
+          runtime: rw
+          apps: rw
+      unknown:group:
+        cluster: none
