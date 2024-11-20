@@ -1,50 +1,73 @@
 cluster:
-  none:
-    - command: "'*' '*'"
-      expected: "no"
-    - command: get namespace -A
-      expected: "no"
-    - command: list namespace -A
-      expected: "no"
-    - command: watch namespace -A
-      expected: "no"
-    - command: get clusterrole -A
-      expected: "no"
-    - command: get crds -A
-      expected: "no"
-  ro: 
-    - command: "'*' '*'"
-      expected: "no"
-    - command: get namespace -A
-      expected: "yes"
-    - command: list namespace -A
-      expected: "yes"
-    - command: watch namespace -A
-      expected: "yes"
-    - command: get clusterrole -A
-      expected: "no"
-    - command: get crds -A
-      expected: "yes"
-  rw:
-    - command: "'*' '*'"
-      expected: "yes"
-  cluster-basic:
-    - command: "'*' '*'"
-      expected: "no"
-    - command: create namespace -A
-      expected: "yes"
-    - command: get namespace -A
-      expected: "yes"
-    - command: list namespace -A
-      expected: "yes"
-    - command: watch namespace -A
-      expected: "yes"
-    - command: delete namespace -A
-      expected: "no"
-    - command: get clusterrole -A
-      expected: "no"
-    - command: get crds -A
-      expected: "yes"
+  "*":
+    none:
+      - command: "'*' '*'"
+        expected: "no"
+    rwd:
+      - command: "'*' '*'"
+        expected: "yes"
+  clusterrole:
+    none:
+      - command: get clusterrole -A
+        expected: "no"
+    ro:
+      - command: get clusterrole -A
+        expected: "yes"
+  namespace:
+    none:
+      - command: get namespace -A
+        expected: "no"
+      - command: list namespace -A
+        expected: "no"
+      - command: watch namespace -A
+        expected: "no"
+      - command: create namespace -A
+        expected: "no"
+      - command: delete namespace -A
+        expected: "no"
+    ro:
+      - command: "'*' '*'"
+        expected: "no"
+      - command: get namespace -A
+        expected: "yes"
+      - command: list namespace -A
+        expected: "yes"
+      - command: watch namespace -A
+        expected: "yes"
+      - command: create namespace -A
+        expected: "no"
+      - command: delete namespace -A
+        expected: "no"
+    rw:
+      - command: get namespace -A
+        expected: "yes"
+      - command: list namespace -A
+        expected: "yes"
+      - command: watch namespace -A
+        expected: "yes"
+      - command: create namespace -A
+        expected: "yes"
+      - command: delete namespace -A
+        expected: "no"
+    rwd:
+      - command: get namespace -A
+        expected: "yes"
+      - command: list namespace -A
+        expected: "yes"
+      - command: watch namespace -A
+        expected: "yes"
+      - command: create namespace -A
+        expected: "yes"
+      - command: delete namespace -A
+        expected: "yes"
+  crd:
+    none:
+      - command: get crds -A
+        expected: "no"
+    ro:
+      - command: get crds -A
+        expected: "yes"
+
 namespace:
   none:
     - command: get pods
@@ -63,6 +86,33 @@ namespace:
       expected: "no"
     - command: delete pods
       expected: "no"
+    - command: get keycloakclients
+      expected: "yes"
+      api-resource-exist: keycloakclients
+    - command: create keycloakclients
+      expected: "no"
+      api-resource-exists: keycloakclients
+    - command: delete keycloakclients
+      expected: "no"
+      api-resource-exists: keycloakclients
+    - command: get keycloakrealms
+      expected: "no"
+      api-resource-exists: keycloakrealms
+    - command: create keycloakrealms
+      expected: "no"
+      api-resource-exists: keycloakrealms
+    - command: delete keycloakrealms
+      expected: "no"
+      api-resource-exists: keycloakrealms
+    - command: get fixtenants
+      expected: "no"
+      api-resource-exists: fixtenants
+    - command: create fixtenants
+      expected: "no"
+      api-resource-exists: fixtenants
+    - command: delete fixtenants
+      expected: "no"
+      api-resource-exists: fixtenants
   ro:
     - command: get pods
       expected: "yes"
@@ -80,6 +130,33 @@ namespace:
       expected: "no"
     - command: delete pods
       expected: "no"
+    - command: get keycloakclients
+      expected: "yes"
+      api-resource-exist: keycloakclients
+    - command: create keycloakclients
+      expected: "no"
+      api-resource-exists: keycloakclients
+    - command: delete keycloakclients
+      expected: "no"
+      api-resource-exists: keycloakclients
+    - command: get keycloakrealms
+      expected: "yes"
+      api-resource-exists: keycloakrealms
+    - command: create keycloakrealms
+      expected: "no"
+      api-resource-exists: keycloakrealms
+    - command: delete keycloakrealms
+      expected: "no"
+      api-resource-exists: keycloakrealms
+    - command: get fixtenants
+      expected: "yes"
+      api-resource-exists: fixtenants
+    - command: create fixtenants
+      expected: "no"
+      api-resource-exists: fixtenants
+    - command: delete fixtenants
+      expected: "no"
+      api-resource-exists: fixtenants
   rw:
     - command: get pods
       expected: "yes"
@@ -96,4 +173,34 @@ namespace:
     - command: update pods
       expected: "yes"
     - command: delete pods
+      expected: "yes"
+    - command: get keycloakclients
+      expected: "yes"
+      api-resource-exist: keycloakclients
+    - command: create keycloakclients
+      expected: "yes"
+      api-resource-exists: keycloakclients
+    - command: delete keycloakclients
+      expected: "yes"
+      api-resource-exists: keycloakclients
+    - command: get keycloakrealms
+      expected: "yes"
+      api-resource-exists: keycloakrealms
+    - command: create keycloakrealms
+      expected: "yes"
+      api-resource-exists: keycloakrealms
+    - command: delete keycloakrealms
+      expected: "yes"
+      api-resource-exists: keycloakrealms
+    - command: get fixtenants
+      expected: "yes"
+      api-resource-exists: fixtenants
+    - command: create fixtenants
+      expected: "yes"
+      api-resource-exists: fixtenants
+    - command: delete fixtenants
+      expected: "no"
+      api-resource-exists: fixtenants
+  rwd:
+    - command: "'*' '*'"
       expected: "yes"

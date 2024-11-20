@@ -42,16 +42,16 @@ def start(config, definitions, apiResources):
 
       for scope, value in authorizations.items():
         if scope == "cluster":
-          authorization = value
-          tests.extend(buildCommands(definitions, apiResources, kind, impersonated, scope, authorization))
+          for target, authorization in value.items():
+            tests.extend(buildCommands("cluster", target, definitions, apiResources, kind, impersonated, authorization))
         elif scope == "namespaces":
           for namespace, authorization in value.items():
             if "*" in namespace:
               Temporary_namespaces[namespace] = create_temporary_namespace(namespace)
-              tests.extend(buildCommands(definitions, apiResources, kind, impersonated, Temporary_namespaces[namespace], authorization))
+              tests.extend(buildCommands("namespace", Temporary_namespaces[namespace], definitions, apiResources, kind, impersonated, authorization))
             else:
               if namespace_exists(namespace):
-                tests.extend(buildCommands(definitions, apiResources, kind, impersonated, namespace, authorization))
+                tests.extend(buildCommands("namespace", namespace, definitions, apiResources, kind, impersonated, authorization))
               else:
                 print(f"INFO: The namespace '{namespace}' does not exist in this cluster and will be ignored.")
 
@@ -76,15 +76,16 @@ def start(config, definitions, apiResources):
 ################################################
 # Build commands
 ################################################
-def buildCommands(definitions, apiResources, kind, impersonated, scope, authorization_value):
+def buildCommands(scope, target, definitions, apiResources, kind, impersonated, authorization_value):
   """
     Returns a list of tests based on kind authorization
 
     Parameters:
+    - scope (string): Specifies the type of authorization. Could be `cluster` or `namespace`
+    - target (string): Specifies the name of the target. For the scope `cluster`, a target is a cluster-scoped resource
     - definitions (map): Specifies the list of commands
     - kind (string): Specifies the kind of resource having the access. Could be `serviceaccount` or `group`
     - impersonated (string): Specifies the name of the item having the access
-    - scope (string): Specifies the type of authorization. Could be `cluster` or a namespace
     - authorization_value (string): Specifies the content of the authorization
 
     Returns:
@@ -96,11 +97,11 @@ def buildCommands(definitions, apiResources, kind, impersonated, scope, authoriz
   """
   try:
     if scope == "cluster":
-      scoped_definitions = definitions[scope][authorization_value]
-    else:
-      scoped_definitions = definitions["namespaces"][authorization_value]
+      scoped_definitions = definitions["cluster"][target][authorization_value]
+    elif scope == "namespace":
+      scoped_definitions = definitions["namespace"][authorization_value]
   except KeyError:
-    print(f"Error: Either '{scope}' or '{authorization_value}' does not exist in definitions.")
+    print(f"Error: Either '{scope}', '{target}' or '{authorization_value}' does not exist in definitions.")
     scoped_definitions = []
 
   scoped_definitions = copy.deepcopy(scoped_definitions)
@@ -120,9 +121,9 @@ def buildCommands(definitions, apiResources, kind, impersonated, scope, authoriz
     elif kind == "group":
       command["command"] = f'kubectl auth can-i --as=any:user --as-group={impersonated} {command["command"]}'
 
-    # set the namespace if namespace scoped test
-    if scope != "cluster":
-      command["command"] = f'{command["command"]} -n {scope}'
+    # set the namespace if namespace scoped
+    if scope == "namespace":
+      command["command"] = f'{command["command"]} -n {target}'
 
     commands.append(command)
 
@@ -238,8 +239,8 @@ def wait_for_kyerno_policy(namespace):
   """
     Wait for kyverno to create the RoleBinding  (timeout: 20 iterations)
   """
-  print("Waiting for kyverno to create the RoleBinding 'valstro:groups:dev-n:cluster-admin' (timeout: 20 iterations)...")
-  command = f"kubectl get rolebinding valstro:groups:dev-n:cluster-admin -n {namespace}"
+  print("Waiting for kyverno to create the RoleBinding 'valstro:all:dev-n:cluster-admin' (timeout: 20 iterations)...")
+  command = f"kubectl get rolebinding valstro:all:dev-n:cluster-admin -n {namespace}"
   for i in range(20):
     try:
       subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True, text=True)
